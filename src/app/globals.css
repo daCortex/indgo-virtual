@@ -1,0 +1,267 @@
+@import "tailwindcss";
+
+/* ==================================================================
+   IndGo Air Virtual — "The Jharokha" design system
+   Indian heritage rendered as clean modern vector.
+   Palette : IndiGo Blue #003DA5 · White · Sky #6DCFF6
+             + heritage Marigold #D98A2B on a warm sandstone-ivory canvas.
+   Motifs  : cusped Mughal arch · jali lattice · rangoli line-art.
+   Type    : Bricolage Grotesque (display) + Inter (body).
+   Rules   : light-default, airy, minimal — never dark/cyber/cluttered.
+================================================================== */
+
+@theme {
+  /* Brand */
+  --color-indigo: #003da5;        /* primary — IndiGo blue */
+  --color-indigo-deep: #002a72;   /* deeper blue for heroes/footers */
+  --color-indigo-night: #071633;  /* midnight indigo (dark mode canvas) */
+  --color-sky: #6dcff6;           /* accent — sky */
+  --color-sky-soft: #aee3fb;
+  --color-marigold: #d98a2b;      /* heritage warm accent */
+  --color-marigold-soft: #f0b45f;
+  --color-henna: #9c4a1a;         /* deep terracotta for rare emphasis */
+
+  /* Warm sandstone neutrals (remapped in dark) */
+  --color-paper: #fbf8f2;         /* page canvas — warm ivory */
+  --color-surface: #ffffff;       /* cards */
+  --color-sand: #f4ede0;          /* alternating warm section tint */
+  --color-sand-deep: #ece1cd;     /* soft fills / arches */
+  --color-line: #e3d9c6;          /* warm borders */
+  --color-ink: #1b2338;           /* primary text — ink blue-black */
+  --color-slate: #4a5163;         /* body text */
+  --color-faint: #8a8577;         /* meta / labels (warm grey) */
+
+  /* Type — next/font sets --font-bricolage / --font-inter on <body> */
+  --font-display: var(--font-bricolage), "Georgia", serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  /* Shape */
+  --radius-md: 0.5rem;
+  --radius-lg: 0.9rem;
+  --radius-xl: 1.35rem;
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --shadow-soft: 0 1px 2px rgba(27, 35, 56, 0.04), 0 8px 30px -12px rgba(27, 35, 56, 0.12);
+  --shadow-lift: 0 2px 6px rgba(27, 35, 56, 0.05), 0 24px 60px -24px rgba(0, 61, 165, 0.28);
+}
+
+/* ---- Dark mode: rich royal night, never black-cyber ---- */
+html.dark {
+  --color-indigo: #6ea6ff;        /* brightened blue for text/links */
+  --color-sky: #8fdcff;
+  --color-marigold: #f0b45f;
+  --color-marigold-soft: #f6cd8c;
+
+  --color-paper: #071633;         /* midnight indigo */
+  --color-surface: #0e2044;
+  --color-sand: #0b1c3d;
+  --color-sand-deep: #12295a;
+  --color-line: #1e3564;
+  --color-ink: #eef3ff;
+  --color-slate: #b7c4de;
+  --color-faint: #7f8fb0;
+
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.3), 0 10px 34px -14px rgba(0, 0, 0, 0.6);
+  --shadow-lift: 0 2px 6px rgba(0, 0, 0, 0.35), 0 30px 70px -28px rgba(0, 0, 0, 0.7);
+}
+
+:root { color-scheme: light; }
+html.dark { color-scheme: dark; }
+
+* { border-color: var(--color-line); }
+
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
+body {
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+::selection { background: var(--color-sky); color: var(--color-indigo-deep); }
+
+h1, h2, h3, h4, .font-display {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.04;
+}
+
+/* ---------- Layout helpers ---------- */
+.wrap { width: 100%; max-width: 1200px; margin-inline: auto; padding-inline: 1.5rem; }
+@media (min-width: 768px) { .wrap { padding-inline: 2rem; } }
+
+.eyebrow {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-marigold);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.eyebrow::before {
+  content: "";
+  width: 1.6rem; height: 1px;
+  background: currentColor;
+  opacity: 0.7;
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+  font-weight: 600; font-size: 0.95rem;
+  padding: 0.8rem 1.5rem;
+  border-radius: 999px;
+  transition: all 0.28s var(--ease-out);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn-primary {
+  background: var(--color-indigo);
+  color: #fff;
+  box-shadow: 0 10px 26px -12px rgba(0, 61, 165, 0.7);
+}
+.btn-primary:hover { background: var(--color-indigo-deep); transform: translateY(-2px); box-shadow: 0 16px 34px -12px rgba(0, 61, 165, 0.8); }
+html.dark .btn-primary { color: #071633; }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--color-ink);
+  border: 1px solid var(--color-line);
+}
+.btn-ghost:hover { border-color: var(--color-indigo); color: var(--color-indigo); transform: translateY(-2px); }
+
+.btn-gold {
+  background: var(--color-marigold);
+  color: #fff;
+  box-shadow: 0 10px 26px -12px rgba(217, 138, 43, 0.7);
+}
+.btn-gold:hover { filter: brightness(1.05); transform: translateY(-2px); }
+html.dark .btn-gold { color: #241200; }
+
+/* ---------- Cards ---------- */
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.35s var(--ease-out), box-shadow 0.35s var(--ease-out), border-color 0.35s var(--ease-out);
+}
+.card-hover:hover { transform: translateY(-4px); box-shadow: var(--shadow-lift); border-color: color-mix(in srgb, var(--color-indigo) 30%, var(--color-line)); }
+
+/* ===================================================================
+   MOTIF 1 — Cusped Mughal arch
+   A reusable clip-path arch for framing images/cards.
+=================================================================== */
+.arch-clip {
+  /* pointed cusped arch approximated with a path via clip-path (SVG ref) */
+  clip-path: url(#archClip);
+}
+/* CSS-only soft arch (rounded ogee top) as a fallback / decorative frame */
+.arch-frame {
+  border-top-left-radius: 50% 22%;
+  border-top-right-radius: 50% 22%;
+  overflow: hidden;
+}
+
+/* ===================================================================
+   MOTIF 2 — Jali lattice
+   Perforated stone-screen texture rendered as layered gradients.
+=================================================================== */
+.jali {
+  --j: color-mix(in srgb, var(--color-indigo) 12%, transparent);
+  background-image:
+    repeating-linear-gradient(45deg, var(--j) 0 1px, transparent 1px 22px),
+    repeating-linear-gradient(-45deg, var(--j) 0 1px, transparent 1px 22px);
+  background-size: 31px 31px;
+}
+.jali-gold {
+  --j: color-mix(in srgb, var(--color-marigold) 24%, transparent);
+}
+/* dotted rosette jali for hero glow */
+.jali-dots {
+  background-image: radial-gradient(color-mix(in srgb, var(--color-indigo) 16%, transparent) 1.4px, transparent 1.5px);
+  background-size: 20px 20px;
+}
+
+/* ---------- Section tints & dividers ---------- */
+.tint-sand { background: var(--color-sand); }
+.tint-hero {
+  background:
+    radial-gradient(60% 80% at 80% -10%, color-mix(in srgb, var(--color-sky) 30%, transparent), transparent 60%),
+    radial-gradient(50% 60% at 0% 110%, color-mix(in srgb, var(--color-marigold) 16%, transparent), transparent 60%),
+    var(--color-paper);
+}
+
+/* scalloped divider (like a jharokha eave) */
+.scallop {
+  height: 22px;
+  background: var(--color-surface);
+  -webkit-mask: radial-gradient(14px at 50% 0, transparent 98%, #000) repeat-x;
+  -webkit-mask-size: 28px 22px;
+  mask: radial-gradient(14px at 50% 0, transparent 98%, #000) repeat-x;
+  mask-size: 28px 22px;
+}
+
+/* ---------- Scroll reveal ---------- */
+.reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out); }
+.reveal.in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } }
+
+/* ---------- Chips / pills ---------- */
+.chip {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.04em;
+  padding: 0.28rem 0.7rem; border-radius: 999px;
+  border: 1px solid var(--color-line);
+  background: color-mix(in srgb, var(--color-sky) 12%, var(--color-surface));
+  color: var(--color-indigo);
+}
+.chip-gold { background: color-mix(in srgb, var(--color-marigold) 14%, var(--color-surface)); color: var(--color-henna); }
+html.dark .chip-gold { color: var(--color-marigold); }
+
+/* difficulty dots */
+.diff { display: inline-flex; gap: 3px; align-items: center; }
+.diff i { width: 6px; height: 6px; border-radius: 999px; background: var(--color-line); display: block; }
+.diff.beg i:nth-child(1) { background: #3fa66a; }
+.diff.int i:nth-child(-n+2) { background: var(--color-marigold); }
+.diff.adv i { background: var(--color-henna); }
+
+/* ---------- Table ---------- */
+.tbl { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.tbl th { text-align: left; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-faint); font-weight: 600; padding: 0.75rem 1rem; border-bottom: 1px solid var(--color-line); }
+.tbl td { padding: 0.85rem 1rem; border-bottom: 1px solid var(--color-line); color: var(--color-slate); }
+.tbl tr:last-child td { border-bottom: 0; }
+.tbl tbody tr { transition: background 0.2s; }
+.tbl tbody tr:hover { background: var(--color-sand); }
+
+/* ---------- Nav ---------- */
+.nav-link { position: relative; color: var(--color-slate); font-weight: 500; font-size: 0.92rem; transition: color 0.2s; }
+.nav-link:hover, .nav-link.active { color: var(--color-indigo); }
+.nav-link.active::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -6px; height: 2px;
+  background: var(--color-marigold); border-radius: 2px;
+}
+
+/* subtle arch-draw animation for hero arch keyline */
+@keyframes drawArch { from { stroke-dashoffset: 900; } to { stroke-dashoffset: 0; } }
+.arch-draw { stroke-dasharray: 900; animation: drawArch 2.4s var(--ease-out) forwards; }
+
+/* gentle float for the paper-plane accent */
+@keyframes floaty { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-8px) } }
+.floaty { animation: floaty 5s ease-in-out infinite; }
+
+/* number counters */
+.stat-num { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.03em; line-height: 1; }
+
+/* mandala slow spin */
+@keyframes spinslow { to { transform: rotate(360deg); } }
+.spinslow { animation: spinslow 90s linear infinite; }
+@media (prefers-reduced-motion: reduce) { .spinslow, .floaty, .arch-draw { animation: none; } }
