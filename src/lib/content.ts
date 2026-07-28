@@ -32,6 +32,7 @@ export const NAV = [
   { label: "Events", href: "/events" },
   { label: "Training", href: "/training" },
   { label: "Ranks", href: "/ranks" },
+  { label: "Careers", href: "/careers" },
   { label: "About", href: "/about" },
 ];
 
@@ -186,10 +187,170 @@ export const PILOT = {
   onTime: "94%",
   landingRate: "-118 fpm",
   joined: "Apr 2025",
+  // Three-currency economy (mock balances)
+  money: 245000, // ₹ — salary balance
+  credits: 1240, // reputation
+  typeRatings: ["Dash 8 Q400", "Airbus A320"],
+  routeLicenses: ["Domestic Operations", "Regional Operations"],
 };
 export const RECENT_FLIGHTS = [
   { fnum: "6E-201", route: "VABB → VIDP", ac: "A321neo", dur: "2h 08m", ldg: "-102 fpm", status: "Approved" },
   { fnum: "6E-1408", route: "VIDP → OMDB", ac: "A321neo", dur: "3h 51m", ldg: "-134 fpm", status: "Approved" },
   { fnum: "6E-512", route: "VABB → VOMM", ac: "A320", dur: "1h 57m", ldg: "-96 fpm", status: "Approved" },
   { fnum: "6E-247", route: "VOCI → VABB", ac: "Dash 8", dur: "1h 48m", ldg: "-121 fpm", status: "Pending" },
+];
+
+// ===================================================================
+// Credit & Career Progression System
+// A three-currency economy — Flight Hours (experience), Money ₹ (career),
+// Credits (reputation). Figures below are illustrative unless drawn directly
+// from the proposal.
+// ===================================================================
+
+// Format a rupee amount with the Indian grouping system (₹2,45,000).
+export function inr(n: number) {
+  return "₹" + new Intl.NumberFormat("en-IN").format(n);
+}
+
+export type Currency = {
+  key: "hours" | "money" | "credits";
+  name: string;
+  role: string;
+  accent: string; // css var
+  summary: string;
+  cannot: string;
+  uses: string[];
+};
+export const CURRENCIES: Currency[] = [
+  {
+    key: "hours",
+    name: "Flight Hours",
+    role: "Experience",
+    accent: "var(--color-indigo)",
+    summary:
+      "The primary progression metric. Every promotion is earned solely through flying — hours can never be purchased, skipped or substituted.",
+    cannot: "Cannot be bought, traded or skipped",
+    uses: ["Rank promotions", "Career progression", "Fleet eligibility", "Instructor qualifications", "Airline seniority"],
+  },
+  {
+    key: "money",
+    name: "Money",
+    role: "Career · ₹",
+    accent: "var(--color-marigold)",
+    summary:
+      "Salary earned through successful operations. Simulates the financial side of an airline career — pilots manage earnings to stay qualified.",
+    cannot: "Earned by flying, spent to progress",
+    uses: ["Aircraft type ratings", "Check rides", "Recurrent training", "Event registration", "Aircraft rentals", "Aircraft repairs", "License renewals"],
+  },
+  {
+    key: "credits",
+    name: "Credits",
+    role: "Reputation",
+    accent: "var(--color-sky)",
+    summary:
+      "Reputation and contribution to the community. Earned through participation, consistency and quality operations — never bought with any currency.",
+    cannot: "Cannot be bought with real or in-game money",
+    uses: ["Route licenses", "Codeshare operations", "Exclusive liveries", "Special callsigns", "VIP lounge access", "Priority event registration", "Profile cosmetics", "Company store rewards"],
+  },
+];
+
+export type CareerRank = { name: string; min: number; max: number | null; focus: string };
+export const CAREER_RANKS: CareerRank[] = [
+  { name: "BlueSpark Member", min: 0, max: 50, focus: "Short Haul Operations" },
+  { name: "SkyPulse Flyer", min: 50, max: 100, focus: "Medium Haul Operations" },
+  { name: "BluChip Explorer", min: 100, max: 150, focus: "Medium Haul Expansion" },
+  { name: "Blue Horizon Navigator", min: 150, max: 300, focus: "Long Haul Operations" },
+  { name: "6E Flight Vanguard", min: 300, max: 450, focus: "Career Progression" },
+  { name: "Azure Circuit Elite", min: 450, max: 600, focus: "Career Progression" },
+  { name: "BluChip Crest", min: 600, max: 800, focus: "Career Progression" },
+  { name: "IndiGo Fleet Envoy", min: 800, max: 1000, focus: "Career Progression" },
+  { name: "Blue Meridian Commander", min: 1000, max: 1500, focus: "Career Progression" },
+  { name: "Sky Dominion Elite", min: 1500, max: 2000, focus: "Career Progression" },
+  { name: "BluChip Sovereign", min: 2000, max: 2500, focus: "Career Progression" },
+  { name: "IndiGo Zenith Marshal", min: 2500, max: 3000, focus: "Career Progression" },
+  { name: "Blue Crown Regent", min: 3000, max: 4000, focus: "Career Progression" },
+  { name: "Fleet Sapphire Chancellor", min: 4000, max: 5000, focus: "Career Progression" },
+  { name: "IndiGo Blue Imperium", min: 5000, max: null, focus: "Elite Career Status" },
+];
+
+export const PREMIUM_RANKS: CareerRank[] = [
+  { name: "BluChip Sovereign", min: 0, max: 500, focus: "Prestige tier" },
+  { name: "Blue Crest Regent", min: 500, max: 1000, focus: "Prestige tier" },
+  { name: "Fleet Sapphire Chancellor", min: 1000, max: 1500, focus: "Prestige tier" },
+  { name: "IndiGo Zenith Imperium", min: 1500, max: 3000, focus: "Prestige tier" },
+  { name: "Blue Infinity Grandmaster", min: 3000, max: null, focus: "Prestige tier" },
+];
+
+// Resolve current + next career rank and progress from a pilot's hours.
+export function careerStanding(hours: number) {
+  const idx = Math.max(0, CAREER_RANKS.findIndex((r) => r.max === null || hours < r.max));
+  const current = CAREER_RANKS[idx];
+  const next = CAREER_RANKS[idx + 1] ?? null;
+  const spanStart = current.min;
+  const spanEnd = current.max ?? current.min;
+  const pct = current.max === null ? 100 : Math.min(100, Math.round(((hours - spanStart) / (spanEnd - spanStart)) * 100));
+  const toNext = current.max === null ? 0 : +(current.max - hours).toFixed(1);
+  return { current, next, pct, toNext };
+}
+
+export type TypeRating = { ac: string; hours: number; money: number; credits: number };
+export const TYPE_RATINGS: TypeRating[] = [
+  { ac: "Bombardier Dash 8 Q400", hours: 0, money: 0, credits: 0 },
+  { ac: "Airbus A320", hours: 50, money: 120000, credits: 0 },
+  { ac: "Airbus A320neo", hours: 100, money: 180000, credits: 20 },
+  { ac: "Boeing 737-800", hours: 150, money: 240000, credits: 30 },
+  { ac: "Airbus A321", hours: 200, money: 300000, credits: 45 },
+  { ac: "Boeing 737 MAX 8", hours: 300, money: 390000, credits: 70 },
+  { ac: "Airbus A321neo", hours: 350, money: 430000, credits: 90 },
+  { ac: "Boeing 787-9", hours: 600, money: 650000, credits: 160 },
+  { ac: "Boeing 777-300ER", hours: 800, money: 820000, credits: 220 },
+];
+
+export type RouteLicense = { name: string; credits: number; note: string };
+export const ROUTE_LICENSES: RouteLicense[] = [
+  { name: "Domestic Operations", credits: 0, note: "Included from day one — trunk & metro routes" },
+  { name: "Regional Operations", credits: 120, note: "Tier-2 cities & hill airports" },
+  { name: "Cargo Operations", credits: 250, note: "Freight & relief missions" },
+  { name: "International Operations", credits: 300, note: "Gulf & Southeast Asia sectors" },
+  { name: "VIP Charter Operations", credits: 500, note: "Bespoke charter flying" },
+  { name: "Ultra Long Haul Operations", credits: 600, note: "Widebody long-haul command" },
+];
+
+export type StoreItem = { name: string; credits: number };
+export const STORE_ITEMS: StoreItem[] = [
+  { name: "Profile Badges", credits: 40 },
+  { name: "Event Medals", credits: 30 },
+  { name: "Nickname Colours", credits: 50 },
+  { name: "Discord Roles", credits: 60 },
+  { name: "Custom Pilot Card Themes", credits: 80 },
+  { name: "Anniversary Rewards", credits: 150 },
+  { name: "Exclusive Liveries", credits: 200 },
+  { name: "Golden Callsigns", credits: 350 },
+  { name: "Exclusive Route Access", credits: 400 },
+];
+
+export const SALARY_FACTORS = [
+  { name: "Passenger Load", icon: "pax" },
+  { name: "Landing Quality", icon: "landing" },
+  { name: "Fuel Efficiency", icon: "fuel" },
+  { name: "Weather Conditions", icon: "weather" },
+  { name: "Operational Delays", icon: "delay" },
+  { name: "Flight Completion", icon: "check" },
+];
+
+export const MISSIONS = [
+  { name: "Daily Missions", cadence: "Every day", reward: "₹ + Credits" },
+  { name: "Weekly Objectives", cadence: "Weekly", reward: "₹ + Credits" },
+  { name: "Monthly Campaigns", cadence: "Monthly", reward: "Credits + badges" },
+  { name: "Group Flights", cadence: "Scheduled", reward: "₹ + Credits" },
+  { name: "Route of the Week", cadence: "Weekly", reward: "Bonus ₹" },
+  { name: "Challenging Airport Ops", cadence: "Rotating", reward: "Credits + cosmetics" },
+];
+
+export const CONTRACTS = [
+  { name: "Delhi–Mumbai Business Contract", boost: "Boosted ₹ on VABB ↔ VIDP", tag: "Trunk" },
+  { name: "Festival Rush Operations", boost: "Bonus rewards on metro routes", tag: "Seasonal" },
+  { name: "Middle East Expansion", boost: "Extra Credits on Gulf sectors", tag: "International" },
+  { name: "Cargo Relief Missions", boost: "Premium ₹ on cargo ops", tag: "Cargo" },
+  { name: "Monsoon Operations", boost: "Reward multiplier in adverse weather", tag: "Weather" },
 ];
